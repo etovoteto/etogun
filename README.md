@@ -1,2 +1,4 @@
-# etogun
-Gun peer server for ETOVOTETO
+## NO STORE GUN DB PEER
+
+
+Works fine!

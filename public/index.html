@@ -1,0 +1,73 @@
+<!-- This is a static file -->
+<!-- served from your routes in server.js -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A cool thing made with Glitch" />
+
+    <title>Welcome to Glitch!</title>
+
+    <link rel="stylesheet" href="/style.css" />
+    <script defer type="module">
+      import "https://cdn.jsdelivr.net/npm/gun/gun.js";
+      import "https://cdn.jsdelivr.net/npm/gun/sea.js"
+      import { createApp, reactive } from "https://unpkg.com/petite-vue?module";
+
+      const gun = GUN(["https://etogun.glitch.me/gun"]);
+      const game = 'etovoteto'
+      
+
+
+      const store = reactive({
+        server: {
+          pulse: 'connecting',
+        },     
+        pointer: [0, 0],
+        listen() {
+          self = this;
+          gun
+            .get(game)
+            .get("relay")
+            .get("pulse")
+            .on(d => (self.server.pulse = d));
+        },
+        getPointer() {}
+      });
+      
+        function player(props) {
+          return {
+            $template: '#player-template',
+            pub: props.pub,
+            play() {
+              gun.get(game).get('players').get(this.pub).on(d=>console.log(d))
+            }
+          }
+        }
+
+      store.listen();
+
+      createApp({ store, player }).mount();
+    </script>
+    <template id="player-template">
+      <li>
+        My pub is {{ pub }}
+      <button @click="play()">play</button>
+      </li>
+      
+</template>
+  </head>
+  <body v-scope>
+    <header>
+      <h1>Gun server monitor</h1>
+      <h5>{{store.server.pulse}}</h5>
+    </header>
+    <main>
+      <ul>
+        <li v-scope="player({ pub: Math.random()*900 })"></li>
+      </ul>
+    </main>
+  </body>
+</html>
